@@ -1,41 +1,47 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
+from django.db.models import Count, Avg
+from rest_framework import generics
 from .models import Category, Product, Review
-from .serializers import CategorySerializer, ProductSerializer, ReviewSerializer
+from .serializers import (
+    CategorySerializer,
+    ProductSerializer,
+    ProductWithReviewsSerializer,
+    ReviewSerializer
+)
 
-class CategoryListAPIView(APIView):
-    def get(self, request):
-        categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
-        return Response(serializer.data)
+class CategoryListView(generics.ListAPIView):
+    queryset = Category.objects.annotate(
+        products_count=Count('products')
+    )
+    serializer_class = CategorySerializer
 
-class CategoryDetailAPIView(APIView):
-    def get(self, request, id):
-        category = get_object_or_404(Category, id=id)
-        serializer = CategorySerializer(category)
-        return Response(serializer.data)
 
-class ProductListAPIView(APIView):
-    def get(self, request):
-        products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
+class CategoryDetailView(generics.RetrieveAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
-class ProductDetailAPIView(APIView):
-    def get(self, request, id):
-        product = get_object_or_404(Product, id=id)
-        serializer = ProductSerializer(product)
-        return Response(serializer.data)
 
-class ReviewListAPIView(APIView):
-    def get(self, request):
-        reviews = Review.objects.all()
-        serializer = ReviewSerializer(reviews, many=True)
-        return Response(serializer.data)
+class ProductListView(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 
-class ReviewDetailAPIView(APIView):
-    def get(self, request, id):
-        review = get_object_or_404(Review, id=id)
-        serializer = ReviewSerializer(review)
-        return Response(serializer.data)
+
+class ProductDetailView(generics.RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
+class ProductWithReviewsView(generics.ListAPIView):
+    queryset = Product.objects.annotate(
+        rating=Avg('reviews__stars') 
+    )
+    serializer_class = ProductWithReviewsSerializer
+
+
+class ReviewListView(generics.ListAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+
+class ReviewDetailView(generics.RetrieveAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
