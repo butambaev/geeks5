@@ -1,47 +1,42 @@
-from django.db.models import Count, Avg
+from django.db.models import Count
 from rest_framework import generics
 from .models import Category, Product, Review
-from .serializers import (
-    CategorySerializer,
-    ProductSerializer,
-    ProductWithReviewsSerializer,
-    ReviewSerializer
+from .serializers import ( CategorySerializer, ProductSerializer,  ProductWithReviewsSerializer,  ReviewSerializer
 )
 
-class CategoryListView(generics.ListAPIView):
+
+class CategoryListCreateView(generics.ListCreateAPIView):
     queryset = Category.objects.annotate(
         products_count=Count('products')
     )
     serializer_class = CategorySerializer
 
 
-class CategoryDetailView(generics.RetrieveAPIView):
+class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
 
-class ProductListView(generics.ListAPIView):
+class ProductListCreateView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 
-class ProductDetailView(generics.RetrieveAPIView):
+class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 
 class ProductWithReviewsView(generics.ListAPIView):
-    queryset = Product.objects.annotate(
-        rating=Avg('reviews__stars') 
-    )
+    queryset = Product.objects.all()
     serializer_class = ProductWithReviewsSerializer
 
 
-class ReviewListView(generics.ListAPIView):
+class ReviewListCreateView(generics.ListCreateAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
 
-class ReviewDetailView(generics.RetrieveAPIView):
+class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
