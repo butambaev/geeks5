@@ -1,7 +1,11 @@
-from django.db.models import Count
 from rest_framework import generics
+from django.db.models import Count
 from .models import Category, Product, Review
-from .serializers import ( CategorySerializer, ProductSerializer,  ProductWithReviewsSerializer,  ReviewSerializer
+from .serializers import (
+    CategorySerializer,
+    ProductSerializer,
+    ProductWithReviewsSerializer,
+    ReviewSerializer
 )
 
 
@@ -24,13 +28,7 @@ class ProductListCreateView(generics.ListCreateAPIView):
 
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-
-
-class ProductWithReviewsView(generics.ListAPIView):
-    queryset = Product.objects.all()
     serializer_class = ProductWithReviewsSerializer
-
 
 class ReviewListCreateView(generics.ListCreateAPIView):
     queryset = Review.objects.all()
