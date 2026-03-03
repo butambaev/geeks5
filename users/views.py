@@ -4,6 +4,8 @@ from rest_framework import status
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer
 
 from .models import ConfirmationCode
 from .serializers import (
@@ -67,3 +69,7 @@ class LoginView(APIView):
         token, _ = Token.objects.get_or_create(user=user)
 
         return Response({"token": token.key})
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

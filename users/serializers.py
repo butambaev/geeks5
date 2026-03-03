@@ -2,6 +2,7 @@ import random
 from rest_framework import serializers
 from django.conf import settings
 from .models import ConfirmationCode
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 User = settings.AUTH_USER_MODEL 
 
@@ -38,3 +39,16 @@ class ConfirmSerializer(serializers.Serializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        token["birthdate"] = (
+            user.birthdate.strftime("%Y-%m-%d")
+            if user.birthdate
+            else None
+        )
+
+        return token
